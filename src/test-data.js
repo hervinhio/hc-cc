@@ -3264,7 +3264,7 @@ const Issues = {
                 {
                   type: 'text',
                   text:
-                    'We allow enabling it for the entire project, but some customers would prefer to decide on a ticket basis if customers should see the checklist items or progress. ',
+                    'We allow enabling it for the entire project, but some customers would prefer to decide on a issue basis if customers should see the checklist items or progress. ',
                 },
               ],
             },

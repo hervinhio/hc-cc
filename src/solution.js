@@ -2,14 +2,12 @@ const checkArrayArg = require('./array-arg-util');
 const logAndRethrow = require('./exception-util');
 const { JiraApi } = require('./jira-api');
 
-const getTicketsBelongingToComponent = (component, tickets) => {
-  return tickets.filter((ticket) =>
-    ticketBelongsToComponent(ticket, component)
-  );
+const getIssuesBelongingToComponent = (component, issues) => {
+  return issues.filter((issue) => issueBelongsToComponent(issue, component));
 };
 
-const ticketBelongsToComponent = (ticket, component) => {
-  return !!ticket.fields.components.find((c) => c.name === component.name);
+const issueBelongsToComponent = (issue, component) => {
+  return !!issue.fields.components.find((c) => c.name === component.name);
 };
 
 const unassignedComponents = async () => {
@@ -21,32 +19,29 @@ const unassignedComponents = async () => {
   }
 };
 
-const componentTicketsCount = async (components) => {
+const componentIssuesCount = async (components) => {
   checkArrayArg(components, 'Trying to match issues with no component');
 
   try {
-    const tickets = await JiraApi.componentsTickets(components);
+    const issues = await JiraApi.componentsIssues(components);
 
     return components.map((component) => {
-      const componentIssues = getTicketsBelongingToComponent(
-        component,
-        tickets
-      );
+      const componentIssues = getIssuesBelongingToComponent(component, issues);
 
       return {
         name: component.name,
-        ticketsCount: componentIssues?.length || 0,
+        issuesCount: componentIssues?.length || 0,
       };
     });
   } catch (e) {
-    logAndRethrow(e, 'Error while trying to get tickets mathing to components');
+    logAndRethrow(e, 'Error while trying to get issues mathing to components');
   }
 };
 
 const getIssuesCountOfUnassignedComponents = async () => {
   try {
     const components = await unassignedComponents();
-    return await componentTicketsCount(components);
+    return await componentIssuesCount(components);
   } catch (e) {
     logAndRethrow(e, 'Error while trying to retrieve issues information');
   }
@@ -55,7 +50,7 @@ const getIssuesCountOfUnassignedComponents = async () => {
 module.exports = {
   Solution: {
     unassignedComponents,
-    componentTicketsCount,
+    componentIssuesCount,
     getIssuesCountOfUnassignedComponents,
   },
 };

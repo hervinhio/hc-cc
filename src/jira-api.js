@@ -40,10 +40,10 @@ const components = async () => {
   }
 };
 
-const componentsTickets = async (components) => {
+const componentsIssues = async (components) => {
   checkArrayArg(
     components,
-    'Trying to retrieve tickets with no matching component'
+    'Trying to retrieve issues with no matching component'
   );
 
   try {
@@ -51,7 +51,7 @@ const componentsTickets = async (components) => {
     const { body } = await superagent.get(
       `${Url}${SearchEndpoint}${urlSearchPart}`
     );
-    
+
     return body.issues || [];
   } catch (e) {
     logAndRethrow(e, 'Error while retrieving tickest');
@@ -61,6 +61,6 @@ const componentsTickets = async (components) => {
 module.exports = {
   JiraApi: {
     components,
-    componentsTickets,
+    componentsIssues,
   },
 };

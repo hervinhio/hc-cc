@@ -10,7 +10,7 @@ describe('Coding Challenge tests', () => {
     const componentsStub = Sinon.stub(JiraApi, 'components');
     componentsStub.returns(Components);
 
-    const issuesStub = Sinon.stub(JiraApi, 'componentsTickets').callsFake(
+    const issuesStub = Sinon.stub(JiraApi, 'componentsIssues').callsFake(
       (components) => {
         const componentNames = components.map((c) => c.name);
         return Issues.issues.filter(
@@ -27,14 +27,14 @@ describe('Coding Challenge tests', () => {
       assert.ok(components.every((c) => !c.lead));
     });
 
-    it('should return a list of objects with `issuesCount` when Solution.componentTicketsCount is called', async () => {
+    it('should return a list of objects with `issuesCount` when Solution.componentIssuesCount is called', async () => {
       const components = await Solution.unassignedComponents();
-      const issues = await Solution.componentTicketsCount(components);
+      const issues = await Solution.componentIssuesCount(components);
 
       assert.deepStrictEqual(issues, [
-        { name: 'Data analysis', ticketsCount: 9 },
-        { name: 'Infrastructure', ticketsCount: 0 },
-        { name: 'Marketplace', ticketsCount: 0 },
+        { name: 'Data analysis', issuesCount: 9 },
+        { name: 'Infrastructure', issuesCount: 0 },
+        { name: 'Marketplace', issuesCount: 0 },
       ]);
     });
 
@@ -42,26 +42,26 @@ describe('Coding Challenge tests', () => {
       const results = await Solution.getIssuesCountOfUnassignedComponents();
 
       assert.deepStrictEqual(results, [
-        { name: 'Data analysis', ticketsCount: 9 },
-        { name: 'Infrastructure', ticketsCount: 0 },
-        { name: 'Marketplace', ticketsCount: 0 },
+        { name: 'Data analysis', issuesCount: 9 },
+        { name: 'Infrastructure', issuesCount: 0 },
+        { name: 'Marketplace', issuesCount: 0 },
       ]);
     });
 
-    it('should throw when trying to retrieve tickets with null argument', async () => {
-      await expect(Solution.componentTicketsCount(null)).rejects.toEqual(
+    it('should throw when trying to retrieve issues with null argument', async () => {
+      await expect(Solution.componentIssuesCount(null)).rejects.toEqual(
         new Error('Trying to match issues with no component')
       );
     });
 
-    it('should throw when trying to retrieve tickets with undefined argument', async () => {
-      await expect(Solution.componentTicketsCount()).rejects.toEqual(
+    it('should throw when trying to retrieve issues with undefined argument', async () => {
+      await expect(Solution.componentIssuesCount()).rejects.toEqual(
         new Error('Trying to match issues with no component')
       );
     });
 
-    it('should throw when trying to retrieve tickets with empty array', async () => {
-      await expect(Solution.componentTicketsCount([])).rejects.toEqual(
+    it('should throw when trying to retrieve issues with empty array', async () => {
+      await expect(Solution.componentIssuesCount([])).rejects.toEqual(
         new Error('Trying to match issues with no component')
       );
     });
@@ -73,21 +73,21 @@ describe('Coding Challenge tests', () => {
   });
 
   describe('JiraApi', () => {
-    it('should throw when calling componentsTickets with null argument', async () => {
-      await expect(JiraApi.componentsTickets(null)).rejects.toEqual(
-        new Error('Trying to retrieve tickets with no matching component')
+    it('should throw when calling componentsIssues with null argument', async () => {
+      await expect(JiraApi.componentsIssues(null)).rejects.toEqual(
+        new Error('Trying to retrieve issues with no matching component')
       );
     });
 
-    it('should throw when calling componentsTickets with unsigned argument', async () => {
-      await expect(JiraApi.componentsTickets()).rejects.toEqual(
-        new Error('Trying to retrieve tickets with no matching component')
+    it('should throw when calling componentsIssues with unsigned argument', async () => {
+      await expect(JiraApi.componentsIssues()).rejects.toEqual(
+        new Error('Trying to retrieve issues with no matching component')
       );
     });
 
-    it('should throw when calling componentsTickets with empty array', async () => {
-      await expect(JiraApi.componentsTickets([])).rejects.toEqual(
-        new Error('Trying to retrieve tickets with no matching component')
+    it('should throw when calling componentsIssues with empty array', async () => {
+      await expect(JiraApi.componentsIssues([])).rejects.toEqual(
+        new Error('Trying to retrieve issues with no matching component')
       );
     });
   });
