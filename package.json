@@ -1,0 +1,33 @@
+{
+  "name": "cc",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha src/*.spec.js",
+    "prettify": "prettier --single-quote --write {src,__{tests,mocks}__}/**/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hervinhio/hc-cc.git"
+  },
+  "author": "Hervé Mutombo",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hervinhio/hc-cc/issues"
+  },
+  "homepage": "https://github.com/hervinhio/hc-cc#readme",
+  "devDependencies": {
+    "assert": "^2.0.0",
+    "expect": "^26.6.2",
+    "mocha": "^8.3.2",
+    "mock-require": "^3.0.3",
+    "prettier": "^2.2.1",
+    "prettify": "^0.1.7",
+    "sinon": "^10.0.0",
+    "supertest": "^6.1.3"
+  },
+  "dependencies": {
+    "superagent": "^6.1.0"
+  }
+}
