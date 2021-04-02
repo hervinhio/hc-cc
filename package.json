@@ -2,8 +2,9 @@
   "name": "cc",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
+    "start": "node src/index.js",
     "test": "mocha src/*.spec.js",
     "prettify": "prettier --single-quote --write {src,__{tests,mocks}__}/**/*.js"
   },

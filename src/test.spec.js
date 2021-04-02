@@ -27,11 +27,21 @@ describe('Coding Challenge tests', () => {
       assert.ok(components.every((c) => !c.lead));
     });
 
-    it('should return a list of objects with `issuesCount` when Solution.componentTicketsCount is called ', async () => {
+    it('should return a list of objects with `issuesCount` when Solution.componentTicketsCount is called', async () => {
       const components = await Solution.unassignedComponents();
       const issues = await Solution.componentTicketsCount(components);
 
       assert.deepStrictEqual(issues, [
+        { name: 'Data analysis', ticketsCount: 9 },
+        { name: 'Infrastructure', ticketsCount: 0 },
+        { name: 'Marketplace', ticketsCount: 0 },
+      ]);
+    });
+
+    it('should return a list of objects with `issuesCount` when Solution.getIssuesCountOfUnassignedComponents is called', async () => {
+      const results = await Solution.getIssuesCountOfUnassignedComponents();
+
+      assert.deepStrictEqual(results, [
         { name: 'Data analysis', ticketsCount: 9 },
         { name: 'Infrastructure', ticketsCount: 0 },
         { name: 'Marketplace', ticketsCount: 0 },

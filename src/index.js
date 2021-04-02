@@ -1,3 +1,8 @@
-// 1. Retrieve components
+const { Solution } = require('./solution');
 
-// 2. Search issues associated to components that have not component lead
+const main = async () => {
+  const result = await Solution.getIssuesCountOfUnassignedComponents();
+  console.info(result);
+};
+
+main();

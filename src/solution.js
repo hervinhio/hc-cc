@@ -43,9 +43,19 @@ const componentTicketsCount = async (components) => {
   }
 };
 
+const getIssuesCountOfUnassignedComponents = async () => {
+  try {
+    const components = await unassignedComponents();
+    return await componentTicketsCount(components);
+  } catch (e) {
+    logAndRethrow(e, 'Error while trying to retrieve issues information');
+  }
+};
+
 module.exports = {
   Solution: {
     unassignedComponents,
     componentTicketsCount,
+    getIssuesCountOfUnassignedComponents,
   },
 };

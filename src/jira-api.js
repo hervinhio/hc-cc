@@ -13,7 +13,7 @@ const getUrlSearchPart = (components) => {
     'IN_QUERY_PLACEHOLDER',
     inJqlPart
   );
-  urlSearchPart = urlSearchPart.replace(' ', '%20');
+  return urlSearchPart.replace(' ', '%20');
 };
 
 const getINJqlQueryPart = (components) => {
@@ -48,10 +48,10 @@ const componentsTickets = async (components) => {
 
   try {
     const urlSearchPart = getUrlSearchPart(components);
-
     const { body } = await superagent.get(
       `${Url}${SearchEndpoint}${urlSearchPart}`
     );
+    
     return body.issues || [];
   } catch (e) {
     logAndRethrow(e, 'Error while retrieving tickest');
