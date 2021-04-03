@@ -1,35 +1,10 @@
 const superagent = require('superagent');
-const checkArrayArg = require('./array-arg-util');
 const logAndRethrow = require('./exception-util');
 
 const Url = 'https://herocoders.atlassian.net';
 const ComponentsEndpoint = '/rest/api/3/project/IC/components';
-const SearchEndpoint = '/rest/api/3/search?jql=project%20%3D%20IC%20';
-const ComponentQueryPart = 'AND%20component%20IN(IN_QUERY_PLACEHOLDER)';
-
-const getUrlSearchPart = (components) => {
-  const inJqlPart = getINJqlQueryPart(components);
-  let urlSearchPart = ComponentQueryPart.replace(
-    'IN_QUERY_PLACEHOLDER',
-    inJqlPart
-  );
-  return urlSearchPart.replace(' ', '%20');
-};
-
-const getINJqlQueryPart = (components) => {
-  if (components.length === 1) {
-    return `"${components[0].name}"`;
-  } else {
-    return components.reduce((previous, current, index) => {
-      let queryPart = previous;
-      if (index === 1) {
-        queryPart = `"${previous.name}"`;
-      }
-
-      return `${queryPart}%2C"${current.name}"`;
-    });
-  }
-};
+const SearchEndpoint =
+  '/rest/api/3/search?pagelen=1&jql=project%20%3D%20IC%20AND%20component%20%3D%20';
 
 const components = async () => {
   try {
@@ -40,27 +15,30 @@ const components = async () => {
   }
 };
 
-const componentsIssues = async (components) => {
-  checkArrayArg(
-    components,
-    'Trying to retrieve issues with no matching component'
-  );
+const componentIssues = async (component) => {
+  checkComponentArgument(component);
 
   try {
-    const urlSearchPart = getUrlSearchPart(components);
     const { body } = await superagent.get(
-      `${Url}${SearchEndpoint}${urlSearchPart}`
+      `${Url}${SearchEndpoint}"${component.name}"`
     );
-
-    return body.issues || [];
+    return { name: component.name, total: body.total };
   } catch (e) {
     logAndRethrow(e, 'Error while retrieving tickest');
+  }
+};
+
+const checkComponentArgument = (component) => {
+  if (!component) {
+    throw new Error(
+      `Can't call componentIssues without a component or a componentCallback`
+    );
   }
 };
 
 module.exports = {
   JiraApi: {
     components,
-    componentsIssues,
+    componentIssues,
   },
 };

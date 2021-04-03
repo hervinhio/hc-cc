@@ -7,44 +7,50 @@ const { Components, Issues } = require('./test-data');
 
 describe('Coding Challenge tests', () => {
   describe('Solution', () => {
+    let componentCallbackSpy = Sinon.spy();
     const componentsStub = Sinon.stub(JiraApi, 'components');
     componentsStub.returns(Components);
 
-    const issuesStub = Sinon.stub(JiraApi, 'componentsIssues').callsFake(
-      (components) => {
-        const componentNames = components.map((c) => c.name);
-        return Issues.issues.filter(
+    const issuesStub = Sinon.stub(JiraApi, 'componentIssues').callsFake(
+      (component) => {
+        const issues = Issues.issues.filter(
           (issue) =>
-            !!issue.fields.components.find((c) =>
-              componentNames.includes(c.name)
-            )
+            !!issue.fields.components.find((c) => c.name === component.name)
+        );
+
+        return new Promise((resolve) =>
+          resolve({ name: component.name, total: issues.length })
         );
       }
     );
+
+    afterEach(() => {
+      componentCallbackSpy.resetHistory();
+    });
 
     it('should return a list of unassigned components when Solution.unassignedComponents() is called', async () => {
       const components = await Solution.unassignedComponents();
       assert.ok(components.every((c) => !c.lead));
     });
 
-    it('should return a list of objects with `issuesCount` when Solution.componentIssuesCount is called', async () => {
+    it('should call component callback 3 times when retrieving component issues', async () => {
       const components = await Solution.unassignedComponents();
-      const issues = await Solution.componentIssuesCount(components);
+      const results = await Solution.componentIssuesCount(components);
 
-      assert.deepStrictEqual(issues, [
-        { name: 'Data analysis', issuesCount: 9 },
-        { name: 'Infrastructure', issuesCount: 0 },
-        { name: 'Marketplace', issuesCount: 0 },
+      assert.deepStrictEqual(results, [
+        { name: 'Data analysis', total: 9 },
+        { name: 'Infrastructure', total: 0 },
+        { name: 'Marketplace', total: 0 },
       ]);
     });
 
-    it('should return a list of objects with `issuesCount` when Solution.getIssuesCountOfUnassignedComponents is called', async () => {
-      const results = await Solution.getIssuesCountOfUnassignedComponents();
+    it('should return a list of objects with `issuesCount` when Solution.unassignedComponentsIssuesCounts is called', async () => {
+      const results = await Solution.unassignedComponentsIssuesCounts();
 
       assert.deepStrictEqual(results, [
-        { name: 'Data analysis', issuesCount: 9 },
-        { name: 'Infrastructure', issuesCount: 0 },
-        { name: 'Marketplace', issuesCount: 0 },
+        { name: 'Data analysis', total: 9 },
+        { name: 'Infrastructure', total: 0 },
+        { name: 'Marketplace', total: 0 },
       ]);
     });
 
@@ -73,21 +79,11 @@ describe('Coding Challenge tests', () => {
   });
 
   describe('JiraApi', () => {
-    it('should throw when calling componentsIssues with null argument', async () => {
-      await expect(JiraApi.componentsIssues(null)).rejects.toEqual(
-        new Error('Trying to retrieve issues with no matching component')
-      );
-    });
-
-    it('should throw when calling componentsIssues with unsigned argument', async () => {
-      await expect(JiraApi.componentsIssues()).rejects.toEqual(
-        new Error('Trying to retrieve issues with no matching component')
-      );
-    });
-
-    it('should throw when calling componentsIssues with empty array', async () => {
-      await expect(JiraApi.componentsIssues([])).rejects.toEqual(
-        new Error('Trying to retrieve issues with no matching component')
+    it('should throw when calling componentIssues with null component', async () => {
+      await expect(JiraApi.componentIssues(null)).rejects.toEqual(
+        new Error(
+          `Can't call componentIssues without a component or a componentCallback`
+        )
       );
     });
   });
